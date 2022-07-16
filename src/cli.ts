@@ -15,7 +15,7 @@ const { options, args } = await new Command()
     "-c, --commentout-reveal",
     'reveal commented-out entry biginning "//".',
   )
-  .option("-s, --system-topics", 'show system-topics like "=ENTRY=".')
+  .option("-s, --system-topics", 'show system-topics like "==ENTRY==".')
   .arguments("[topics...]")
   .parse(Deno.args);
 

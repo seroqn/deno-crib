@@ -1,6 +1,8 @@
 import { isArticle, Topic } from "./type.ts";
 export type HAndA = [string[], string[]]; // heads and articles
 
+const TOPIC_SEP = "..";
+
 export function sheetIntoHeadsAndArticles(
   sheet: Topic,
   heads: string[],
@@ -42,7 +44,7 @@ type Opts = {
 export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   let lines = [];
   for (const [heads, atcs] of hAndAs) {
-    const headJoined = heads.join("..");
+    const headJoined = heads.map(escapeTopicSep).join(TOPIC_SEP);
     lines = [
       ...lines,
       ...atcs.reduce((acc: string[], article: string | null) => {
@@ -59,5 +61,11 @@ export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   return lines;
 }
 export function hAndAsIntoTopics(hAndAs: HAndA[]) {
-  return hAndAs.map(([heads, _]: [string[], unknown]) => heads.join(".."));
+  return hAndAs.map(([heads, _]: [string[], unknown]) =>
+    heads.map(escapeTopicSep).join(TOPIC_SEP)
+  );
+}
+
+function escapeTopicSep(head: string) {
+  return /\.\./.test(head) ? `'${head}\`` : head;
 }

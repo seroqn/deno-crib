@@ -1,4 +1,6 @@
 import { isArticle, Topic } from "./type.ts";
+import { sprintf } from "../deps.ts";
+
 export type HAndA = [string[], string[]]; // heads and articles
 
 const TOPIC_SEP = "..";
@@ -44,7 +46,7 @@ type Opts = {
 export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   let lines = [];
   for (const [heads, atcs] of hAndAs) {
-    const headJoined = heads.map(escapeTopicSep).join(TOPIC_SEP);
+    const headLine = sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`);
     lines = [
       ...lines,
       ...atcs.reduce((acc: string[], article: string | null) => {
@@ -54,7 +56,7 @@ export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
         ) {
           return acc;
         }
-        return [...acc, `${headJoined}\t${article}`];
+        return [...acc, `${headLine}\t${article}`];
       }, []),
     ];
   }
@@ -62,10 +64,12 @@ export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
 }
 export function hAndAsIntoTopics(hAndAs: HAndA[]) {
   return hAndAs.map(([heads, _]: [string[], unknown]) =>
-    heads.map(escapeTopicSep).join(TOPIC_SEP)
+    headsIntoTopicLine(heads)
   );
 }
 
-function escapeTopicSep(head: string) {
-  return /\.\./.test(head) ? `'${head}\`` : head;
+function headsIntoTopicLine(heads: string[]) {
+  return heads.map((head: string) => /\./.test(head) ? `"${head}"` : head).join(
+    TOPIC_SEP,
+  );
 }

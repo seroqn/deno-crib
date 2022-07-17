@@ -1,5 +1,8 @@
 import { isArticle, Topic } from "./type.ts";
-import { sprintf } from "../deps.ts";
+import { colors, sprintf } from "../deps.ts";
+
+const headColor = colors.cyan;
+const commentedOutColor = colors.gray;
 
 export type HAndA = [string[], string[]]; // heads and articles
 
@@ -46,19 +49,21 @@ type Opts = {
 export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   let lines = [];
   for (const [heads, atcs] of hAndAs) {
-    const headLine = sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`);
-    lines = [
-      ...lines,
-      ...atcs.reduce((acc: string[], article: string | null) => {
-        if (
-          article == null || !opts.cmoutReveal && /^\s*\/\//.test(article) ||
-          opts.underHide && /^(?:\s*\/\/)?\s*-/.test(article)
-        ) {
-          return acc;
-        }
-        return [...acc, `${headLine}\t${article}`];
-      }, []),
-    ];
+    const headLine = headColor(
+      sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`),
+    );
+    const atcLines = atcs.reduce((acc: string[], article: string | null) => {
+      const isCommentedOut = /^\s*\/\//.test(article);
+      if (
+        article == null || !opts.cmoutReveal && isCommentedOut ||
+        opts.underHide && /^(?:\s*\/\/)?\s*-/.test(article)
+      ) {
+        return acc;
+      }
+      const line = `${headLine}\t${article}`;
+      return [...acc, isCommentedOut ? commentedOutColor(line) : line];
+    }, []);
+    lines = [...lines, ...atcLines];
   }
   return lines;
 }

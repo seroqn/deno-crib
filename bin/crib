@@ -5,7 +5,7 @@ deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/cli.ts" "$@" | (
   case "$L" in
     =fzf=)
       read -r Q # query
-      fzf  -q "$Q" --exit-0 --tabstop=8 --prompt='CRIB> ' --delimiter='\t' --nth='2..'
+      fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --nth='2..'
       ;;
     '') # cliffy --help option
       echo

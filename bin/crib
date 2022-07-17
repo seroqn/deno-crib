@@ -1,6 +1,6 @@
 #!/bin/bash
 : "${CRIB_ROOT:=$(dirname "$(dirname "$(realpath "$0")")")}"
-deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/cli.ts" "$@" | (
+deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/cli.ts" "$@" | {
   read -r L
   case "$L" in
     =fzf=)
@@ -14,7 +14,7 @@ deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/cli.ts" "$@" | (
     *)
       cat
   esac
-)
+}
 sts=(${PIPESTATUS[@]})
 if (( ${sts[0]} ))
 then exit ${sts[0]}

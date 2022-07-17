@@ -18,14 +18,25 @@ export function sheetIntoHeadsAndArticles(
     if (!showSystemTopics && /^==.*==$/.test(key)) {
       continue;
     }
-    if (isArticle(val)) {
-      ret.push([[...heads, key], val]);
-    } else {
+    if (!isArticle(val)) {
       ret = [
         ...ret,
         ...sheetIntoHeadsAndArticles(val, [...heads, key], showSystemTopics),
       ];
+      continue;
+    } else if (key != "_") {
+      ret.push([[...heads, key], val]);
+      continue;
     }
+    let i = ret.length - 1;
+    for (let edge = heads.length, comp = JSON.stringify(heads); i >= 0; i--) {
+      const hs = ret[i][0];
+      if (!(hs.length > edge && JSON.stringify(hs.slice(0, edge)) == comp)) {
+        console.error(i, hs, hs.slice(0, edge), heads);
+        break;
+      }
+    }
+    ret.splice(i + 1, 0, [[...heads, key], val]);
   }
   return ret;
 }

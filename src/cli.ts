@@ -1,5 +1,5 @@
 import { Command } from "./deps.ts";
-import { displayWithFzf, listTopics, loadAndReturnHAndAs } from "./mod.ts";
+import { displayWithFzf, listTopics, loadSheetAndReturnHAndAs } from "./mod.ts";
 
 const { options, args } = await new Command()
   .name("crib")
@@ -19,7 +19,7 @@ const { options, args } = await new Command()
   .arguments("[topics...]")
   .parse(Deno.args);
 
-const hAndAs = loadAndReturnHAndAs(options, args);
+const hAndAs = loadSheetAndReturnHAndAs(options, args);
 
 if ("topics" in options) {
   console.log("=cat=");

@@ -1,4 +1,4 @@
-import { getSettingFilePath, loadSettingFile } from "./sheet/file.ts";
+import { getSheetFilePath, loadSheetFile } from "./sheet/file.ts";
 import {
   filterByTopicQuery,
   HAndA,
@@ -7,12 +7,12 @@ import {
   sheetIntoHeadsAndArticles,
 } from "./sheet/object.ts";
 
-export function loadAndReturnHAndAs(
+export function loadSheetAndReturnHAndAs(
   options: { systemTopics?: boolean },
   args: [string[]?],
 ): HAndA[] {
-  const pth = getSettingFilePath();
-  const sheet = loadSettingFile(pth);
+  const pth = getSheetFilePath();
+  const sheet = loadSheetFile(pth);
   if (sheet == null) {
     Deno.exit(1);
   }

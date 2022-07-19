@@ -2,7 +2,7 @@ import { isTopic, Topic } from "./type.ts";
 import { existsSync, parseYaml, path, xdg } from "../deps.ts";
 import { APPNAME_L } from "../const/app.ts";
 
-export function getSettingFilePath(): string {
+export function getSheetFilePath(): string {
   const FBASE = "crib.yml";
   const homepath = Deno.env.get("CRIB_HOME");
   if (homepath) {
@@ -14,7 +14,7 @@ export function getSettingFilePath(): string {
   return configPaths.find((pth: string) => existsSync(pth)) ?? configPaths[0];
 }
 
-export function loadSettingFile(pth: string): Topic | undefined {
+export function loadSheetFile(pth: string): Topic | undefined {
   if (!existsSync(pth)) {
     console.error(`Setting file not exists in "${pth}"`);
     return undefined;

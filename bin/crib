@@ -1,11 +1,16 @@
 #!/bin/bash
 : "${CRIB_ROOT:=$(dirname "$(dirname "$(realpath "$0")")")}"
-deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/cli.ts" "$@" | {
+deno run --no-check --allow-env --allow-read --allow-write "$CRIB_ROOT/src/cli.ts" "$@" | {
   read -r L
   case "$L" in
     =fzf=)
       read -r Q # query
+      read -r path # article-map path
       fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --nth='2..'
+      if [[ -e "$path" ]]; then
+        :
+        rm "$path"
+      fi
       ;;
     '') # cliffy --help option
       echo

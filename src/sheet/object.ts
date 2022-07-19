@@ -84,7 +84,7 @@ export function hAndAsIntoTopics(hAndAs: HAndA[]) {
   );
 }
 
-function headsIntoTopicLine(heads: string[]) {
+export function headsIntoTopicLine(heads: string[]) {
   return heads.map((head: string) => /\./.test(head) ? `"${head}"` : head).join(
     TOPIC_SEP,
   );

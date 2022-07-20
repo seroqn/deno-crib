@@ -59,21 +59,24 @@ type Opts = {
 };
 export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   let lines = [];
-  for (const [heads, atcs] of hAndAs) {
+  for (const [heads, articles] of hAndAs) {
     const headLine = headColor(
       sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`),
     );
-    const atcLines = atcs.reduce((acc: string[], article: string | null) => {
-      const isCommentedOut = /^\s*\/\//.test(article);
-      if (
-        article == null || !opts.cmoutReveal && isCommentedOut ||
-        opts.underHide && /^(?:\s*\/\/)?\s*-/.test(article)
-      ) {
-        return acc;
-      }
-      const line = `${headLine}\t${article}`;
-      return [...acc, isCommentedOut ? commentedOutColor(line) : line];
-    }, []);
+    const atcLines = articles.reduce(
+      (acc: string[], article: string | null, i: number) => {
+        const isCommentedOut = /^\s*\/\//.test(article);
+        if (
+          article == null || !opts.cmoutReveal && isCommentedOut ||
+          opts.underHide && /^(?:\s*\/\/)?\s*-/.test(article)
+        ) {
+          return acc;
+        }
+        const line = `${i}\t${headLine}\t${article}`;
+        return [...acc, isCommentedOut ? commentedOutColor(line) : line];
+      },
+      [],
+    );
     lines = [...lines, ...atcLines];
   }
   return lines;

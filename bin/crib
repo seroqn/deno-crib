@@ -5,11 +5,13 @@ deno run --no-check --allow-env --allow-read --allow-write "$CRIB_ROOT/src/cli.t
   case "$L" in
     =fzf=)
       read -r Q # query
-      read -r path # article-map path
-      fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --nth='2..'
-      if [[ -e "$path" ]]; then
+      read -r tmpPath # article-map path
+      fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --with-nth=2.. --nth='2..' \
+        --height 64% --preview-window 'down,45%,wrap,border-rounded' \
+        --preview "deno run --no-check --allow-read "$CRIB_ROOT/src/previewer.ts" "$(echo "$tmpPath" | sed 's!\\!\\\\\\\\!g')" {1} {2}"
+      if [[ -e "$tmpPath" ]]; then
         :
-        rm "$path"
+        rm "$tmpPath"
       fi
       ;;
     '') # cliffy --help option

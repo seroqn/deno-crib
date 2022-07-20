@@ -41,9 +41,9 @@ export function displayWithFzf(
 }
 
 export async function writeArticleMap(pth: string, hAndAs: HAndA[]) {
-  const hash = {};
+  const h = {};
   for (const [heads, articles] of hAndAs) {
-    hash[headsIntoTopicLine(heads)] = articles;
+    h[`[${headsIntoTopicLine(heads)}]`] = articles;
   }
-  Deno.writeTextFile(pth, JSON.stringify(hash));
+  Deno.writeTextFile(pth, JSON.stringify(h));
 }

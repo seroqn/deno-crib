@@ -4,6 +4,7 @@ import {
   HAndA,
   hAndAsIntoLines,
   hAndAsIntoTopics,
+  headsIntoTopicLine,
   sheetIntoHeadsAndArticles,
 } from "./sheet/object.ts";
 
@@ -37,4 +38,12 @@ export function displayWithFzf(
   for (const line of lines) {
     console.log(line);
   }
+}
+
+export async function writeArticleMap(pth: string, hAndAs: HAndA[]) {
+  const h = {};
+  for (const [heads, articles] of hAndAs) {
+    h[`[${headsIntoTopicLine(heads)}]`] = articles;
+  }
+  Deno.writeTextFile(pth, JSON.stringify(h));
 }

@@ -1,5 +1,10 @@
 import { Command } from "./deps.ts";
-import { displayWithFzf, listTopics, loadSheetAndReturnHAndAs } from "./mod.ts";
+import {
+  displayWithFzf,
+  listTopics,
+  loadSheetAndReturnHAndAs,
+  writeArticleMap,
+} from "./mod.ts";
 
 const { options, args } = await new Command()
   .name("crib")
@@ -29,6 +34,9 @@ if ("topics" in options) {
 
 console.log("=fzf=");
 console.log(options.query);
+const tmpFPath = Deno.makeTempFileSync({ prefix: "deno-crib-" });
+writeArticleMap(tmpFPath, hAndAs);
+console.log(tmpFPath);
 
 const underHide = options.underHide ?? false;
 const cmoutReveal = options.commentoutReveal ?? false;

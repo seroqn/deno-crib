@@ -5,6 +5,8 @@ export { xdg };
 
 export { sprintf } from "https://deno.land/std@0.144.0/fmt/printf.ts";
 
+export { escapeStringRegexp } from "https://deno.land/x/escape_string_regexp@v0.0.1/mod.ts";
+
 export {
   existsSync,
   expandGlob,

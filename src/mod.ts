@@ -47,3 +47,12 @@ export async function writeArticleMap(pth: string, hAndAs: HAndA[]) {
   }
   Deno.writeTextFile(pth, JSON.stringify(h));
 }
+export function isReadable(pth: string) {
+  try {
+    if (Deno.statSync(pth).isFile) {
+      return true;
+    }
+  } catch (e) {
+  }
+  return false;
+}

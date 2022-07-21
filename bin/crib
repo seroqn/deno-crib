@@ -6,12 +6,23 @@ deno run --no-check --allow-env --allow-read --allow-write "$CRIB_ROOT/src/cli.t
     =fzf=)
       read -r Q # query
       read -r tmpPath # article-map path
-      fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --with-nth=2.. --nth='2..' \
+      sel=$(fzf --ansi -q "$Q" --exit-0 --tabstop=4 --prompt='CRIB> ' --delimiter='\t' --with-nth=2.. --nth='2..' \
         --height 64% --preview-window 'down,45%,wrap,border-rounded' \
-        --preview "deno run --no-check --allow-read "$CRIB_ROOT/src/previewer.ts" "$(echo "$tmpPath" | sed 's!\\!\\\\\\\\!g')" {1} {2}"
+        --preview "deno run --no-check --allow-read "$CRIB_ROOT/src/previewer.ts" "$(echo "$tmpPath" | sed 's!\\!\\\\\\\\!g')" {1} {2}")
       if [[ -e "$tmpPath" ]]; then
         :
         rm "$tmpPath"
+      fi
+      if [[ -n "$sel" ]]; then
+        IFS=$'\n' arr=($(deno run --no-check --allow-env --allow-read "$CRIB_ROOT/src/findSelectedLine.ts" "$sel"))
+        if [[ -n "$arr" ]]; then
+          if [[ "${arr[1]}" == "0" ]]; then
+            echo "fail in finding line \"${arr[2]}\"" >&2
+            less -N +/"${arr[2]}" "${arr[0]}"
+          else
+            less -N +${arr[1]} "${arr[0]}"
+          fi
+        fi
       fi
       ;;
     '') # cliffy --help option

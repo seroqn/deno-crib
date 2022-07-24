@@ -2,7 +2,7 @@ import { Command } from "./deps.ts";
 import {
   displayWithFzf,
   listTopics,
-  loadSheetAndReturnHAndAs,
+  loadSheetAndReturnCribBuds,
   writeArticleMap,
 } from "./mod.ts";
 
@@ -24,20 +24,20 @@ const { options, args } = await new Command()
   .arguments("[topics...]")
   .parse(Deno.args);
 
-const hAndAs = loadSheetAndReturnHAndAs(options, args);
+const cribBuds = loadSheetAndReturnCribBuds(options, args);
 
 if ("topics" in options) {
   console.log("=cat=");
-  listTopics(hAndAs);
+  listTopics(cribBuds);
   Deno.exit(0);
 }
 
 console.log("=fzf=");
 console.log(options.query);
 const tmpFPath = Deno.makeTempFileSync({ prefix: "deno-crib-" });
-writeArticleMap(tmpFPath, hAndAs);
+writeArticleMap(tmpFPath, cribBuds);
 console.log(tmpFPath);
 
 const underHide = options.underHide ?? false;
 const cmoutReveal = options.commentoutReveal ?? false;
-displayWithFzf(hAndAs, underHide, cmoutReveal);
+displayWithFzf(cribBuds, underHide, cmoutReveal);

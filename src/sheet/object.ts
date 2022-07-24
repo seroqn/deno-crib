@@ -4,16 +4,16 @@ import { colors, sprintf } from "../deps.ts";
 const headColor = colors.cyan;
 const commentedOutColor = colors.gray;
 
-export type HAndA = [string[], string[]]; // heads and articles
+export type CribBud = [string[], string[]]; ; // heads and articles
 
 const TOPIC_SEP = "..";
 
-export function sheetIntoHeadsAndArticles(
+export function sheetIntoCribBuds(
   sheet: Topic,
   heads: string[],
   showSystemTopics: boolean,
-): HAndA[] {
-  let ret: HAndA[] = [];
+): CribBud[] {
+  let ret: CribBud[] = [];
   for (const [key, val] of Object.entries(sheet)) {
     if (!showSystemTopics && /^==.*==$/.test(key)) {
       continue;
@@ -21,7 +21,7 @@ export function sheetIntoHeadsAndArticles(
     if (!isArticle(val)) {
       ret = [
         ...ret,
-        ...sheetIntoHeadsAndArticles(val, [...heads, key], showSystemTopics),
+        ...sheetIntoCribBuds(val, [...heads, key], showSystemTopics),
       ];
       continue;
     } else if (key != "_") {
@@ -41,12 +41,12 @@ export function sheetIntoHeadsAndArticles(
   return ret;
 }
 
-export function filterByTopicQuery(hAndAs: HAndA[], topicQuery: string[]) {
+export function filterByTopicQuery(buds: CribBud[], topicQuery: string[]) {
   if (!topicQuery.length) {
-    return hAndAs;
+    return buds;
   }
   const tqs = topicQuery.map((str: string) => str.toUpperCase());
-  return hAndAs.filter(([heads, _]: [string[], unknown]) =>
+  return buds.filter(([heads, _]: [string[], unknown]) =>
     tqs.every((q: string) =>
       heads.some((head: string) => head.toUpperCase().includes(q))
     )
@@ -57,9 +57,9 @@ type Opts = {
   underHide: boolean;
   cmoutReveal: boolean;
 };
-export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
+export function cribBudsIntoLines(buds: CribBud[], opts: Opts): string[] {
   let lines = [];
-  for (const [heads, articles] of hAndAs) {
+  for (const [heads, articles] of buds) {
     const headLine = headColor(
       sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`),
     );
@@ -81,8 +81,8 @@ export function hAndAsIntoLines(hAndAs: HAndA[], opts: Opts): string[] {
   }
   return lines;
 }
-export function hAndAsIntoTopics(hAndAs: HAndA[]) {
-  return hAndAs.map(([heads, _]: [string[], unknown]) =>
+export function cribBudsIntoTopics(buds: CribBud[]) {
+  return buds.map(([heads, _]: [string[], unknown]) =>
     headsIntoTopicLine(heads)
   );
 }

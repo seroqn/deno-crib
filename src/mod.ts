@@ -18,32 +18,36 @@ export function loadSheetAndReturnCribBuds(
     Deno.exit(1);
   }
   const showSystemTopics = !!options.systemTopics;
-  let cribBuds = sheetIntoCribBuds(sheet, [], showSystemTopics);
+  let buds = sheetIntoCribBuds(sheet, [], showSystemTopics);
   const topicQuery = args.length ? args[0] : [];
-  return filterByTopicQuery(cribBuds, topicQuery);
+  return filterByTopicQuery(buds, topicQuery);
 }
 
-export function listTopics(cribBuds: CribBuds[]) {
-  for (const topic of cribBudsIntoTopics(cribBuds)) {
+export function listTopics(buds: CribBuds[]) {
+  for (const topic of cribBudsIntoTopics(buds)) {
     console.log(topic);
   }
 }
 
 export function displayWithFzf(
-  cribBuds: CribBuds[],
+  buds: CribBuds[],
   underHide: boolean,
   cmoutReveal: boolean,
 ) {
-  const lines = cribBudsIntoLines(cribBuds, { underHide, cmoutReveal });
+  const lines = cribBudsIntoLines(buds, { underHide, cmoutReveal });
   for (const line of lines) {
     console.log(line);
   }
 }
 
-export async function writeArticleMap(pth: string, cribBuds: CribBuds[]) {
+export async function writeArticleMap(pth: string, buds: CribBuds[]) {
   const h = {};
-  for (const [heads, articles] of cribBuds) {
-    h[`[${headsIntoTopicLine(heads)}]`] = articles;
+  for (const [heads, themes, articles] of buds) {
+    const themeLine = headsIntoTopicLine(themes);
+    h[`[${headsIntoTopicLine(heads)}]${themeLine}`] = [
+      themes.length ? `[ ${themeLine} ]` : "",
+      ...articles,
+    ];
   }
   Deno.writeTextFile(pth, JSON.stringify(h));
 }

@@ -83,5 +83,5 @@ const lines = Deno.readTextFileSync(path).split("\n");
 const row = _findHeadRow(heads, lines);
 
 console.log(path);
-console.log(String(row + 1));  // 文字列化しないと ansi-color 付きの数字を出力して bash がエラーを出す
+console.log(String(row + 1)); // 文字列化しないと ansi-color 付きの数字を出力して bash がエラーを出す
 console.log(heads.slice(-1)[0]);

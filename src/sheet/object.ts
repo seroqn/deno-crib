@@ -1,16 +1,20 @@
 import { isArticle, Topic } from "./type.ts";
 import { colors, sprintf } from "../deps.ts";
+import { strWidth } from "../helper/helper.ts";
 
 const headColor = colors.cyan;
+const themeColor = colors.brightBlue;
 const commentedOutColor = colors.gray;
+const TABSTOP = 4;
 
-export type CribBud = [string[], string[]]; ; // heads and articles
+export type CribBud = [string[], string[], string[]]; // heads(topics), articleTheme, articles
 
 const TOPIC_SEP = "..";
 
 export function sheetIntoCribBuds(
   sheet: Topic,
   heads: string[],
+  themes: string[],
   showSystemTopics: boolean,
 ): CribBud[] {
   let ret: CribBud[] = [];
@@ -18,27 +22,51 @@ export function sheetIntoCribBuds(
     if (!showSystemTopics && /^==.*==$/.test(key)) {
       continue;
     }
+    const m = key.match(/^(\+)?\s*(.*)$/);
+    const isTheme = !!m[1],
+      head = m[2];
+
     if (!isArticle(val)) {
+      const [hs, ts] = themes.length || isTheme
+        ? [[...heads], [...themes, head]]
+        : [[...heads, head], []];
       ret = [
         ...ret,
-        ...sheetIntoCribBuds(val, [...heads, key], showSystemTopics),
+        ...sheetIntoCribBuds(val, hs, ts, showSystemTopics),
       ];
       continue;
-    } else if (key != "_") {
-      ret.push([[...heads, key], val]);
+    }
+    const v = val == null ? [""] : typeof val == "string" ? [val] : val;
+    const addee: CribBud = themes.length || isTheme
+      ? [[...heads], [...themes, head], v]
+      : [[...heads, head], [], v];
+    if (key != "_") {
+      ret.push(addee);
       continue;
     }
-    let i = ret.length - 1;
-    for (let edge = heads.length, comp = JSON.stringify(heads); i >= 0; i--) {
-      const hs = ret[i][0];
-      if (!(hs.length > edge && JSON.stringify(hs.slice(0, edge)) == comp)) {
-        console.error(i, hs, hs.slice(0, edge), heads);
-        break;
-      }
-    }
-    ret.splice(i + 1, 0, [[...heads, key], val]);
+    underscore(ret, addee, heads);
   }
   return ret;
+}
+function underscore(buds: CribBud[], addee: CribBud, heads: string[]) {
+  const edge = heads.length,
+    comp = JSON.stringify(heads);
+  let i = buds.length - 1;
+  while (i >= 0) {
+    const hs = buds[i][0];
+    if (!(hs.length > edge && JSON.stringify(hs.slice(0, edge)) == comp)) {
+      console.error(
+        'not moved "_" key entry:',
+        i,
+        hs,
+        hs.slice(0, edge),
+        heads,
+      );
+      break;
+    }
+    i--;
+  }
+  buds.splice(i + 1, 0, addee);
 }
 
 export function filterByTopicQuery(buds: CribBud[], topicQuery: string[]) {
@@ -46,7 +74,7 @@ export function filterByTopicQuery(buds: CribBud[], topicQuery: string[]) {
     return buds;
   }
   const tqs = topicQuery.map((str: string) => str.toUpperCase());
-  return buds.filter(([heads, _]: [string[], unknown]) =>
+  return buds.filter(([heads, ..._]: [string[], ...unknown[]]) =>
     tqs.every((q: string) =>
       heads.some((head: string) => head.toUpperCase().includes(q))
     )
@@ -59,20 +87,25 @@ type Opts = {
 };
 export function cribBudsIntoLines(buds: CribBud[], opts: Opts): string[] {
   let lines = [];
-  for (const [heads, articles] of buds) {
-    const headLine = headColor(
-      sprintf("%-21s", `[${headsIntoTopicLine(heads)}]`),
-    );
+  for (const [heads, themes, articles] of buds) {
+    const headLine = sprintf("%-20s", `[${headsIntoTopicLine(heads)}]`);
+    const headLineLen = strWidth(headLine);
+    const offset = headLineLen > 40
+      ? 0
+      : 40 - headLineLen + (headLineLen % TABSTOP ? TABSTOP : 0);
+    const themeLine = themes.length
+      ? themeColor(sprintf(`%-${offset}s`, headsIntoTopicLine(themes)))
+      : " ".repeat(offset);
     const atcLines = articles.reduce(
-      (acc: string[], article: string | null, i: number) => {
+      (acc: string[], article: string, i: number) => {
         const isCommentedOut = /^\s*\/\//.test(article);
         if (
-          article == null || !opts.cmoutReveal && isCommentedOut ||
+          !opts.cmoutReveal && isCommentedOut ||
           opts.underHide && /^(?:\s*\/\/)?\s*-/.test(article)
         ) {
           return acc;
         }
-        const line = `${i}\t${headLine}\t${article}`;
+        const line = `${i}\t${headColor(headLine)}\t${themeLine}\t${article}`;
         return [...acc, isCommentedOut ? commentedOutColor(line) : line];
       },
       [],
@@ -82,7 +115,7 @@ export function cribBudsIntoLines(buds: CribBud[], opts: Opts): string[] {
   return lines;
 }
 export function cribBudsIntoTopics(buds: CribBud[]) {
-  return buds.map(([heads, _]: [string[], unknown]) =>
+  return buds.map(([heads, ..._]: [string[], ...unknown[]]) =>
     headsIntoTopicLine(heads)
   );
 }

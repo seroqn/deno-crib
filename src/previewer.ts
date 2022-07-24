@@ -3,23 +3,30 @@ import { isReadable } from "./mod.ts";
 
 const currLineColor = colors.brightYellow.bold;
 const commentedOutColor = colors.gray;
+const themeColor = colors.brightBlue.bold;
 
-if (Deno.args.length != 3) {
+if (Deno.args.length != 4) {
   console.error("crib-previewer: invalid arguments", Deno.args);
   Deno.exit();
 }
+let [tmpPath, currIdx, jhead, jtheme] = Deno.args;
+++currIdx;
 
-const [path, currIdx, jhead] = Deno.args;
-if (!isReadable(path)) {
-  console.log(`file is not readable: "${path}"`);
+if (!isReadable(tmpPath)) {
+  console.log(`file is not readable: "${tmpPath}"`);
   Deno.exit();
 }
 
-const jhead2articles = JSON.parse(Deno.readTextFileSync(path));
-if (jhead in jhead2articles) {
+const jtopic2articles = JSON.parse(Deno.readTextFileSync(tmpPath));
+const key = jhead + jtheme;
+if (key in jtopic2articles) {
   let i = 0;
-  for (const article of jhead2articles[jhead]) {
-    if (/^\s*\/\//.test(article)) {
+  for (const article of jtopic2articles[key]) {
+    if (i == 0) {
+      if (jtheme != "") {
+        console.log(themeColor(article));
+      }
+    } else if (/^\s*\/\//.test(article)) {
       console.log(
         i == currIdx
           ? commentedOutColor.bold(article)

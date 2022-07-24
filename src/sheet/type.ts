@@ -1,5 +1,5 @@
 export type Topic = { [topic: string]: Topic | Article };
-export type Article = Array<string | null>;
+export type Article = Array<string | null> | string | null;
 
 export function isTopic(t: any): t is Topic {
   return (
@@ -9,7 +9,7 @@ export function isTopic(t: any): t is Topic {
 }
 export function isArticle(a: any): a is Article {
   return (
-    a && Array.isArray(a) &&
-    a.every((b: any) => b == null || typeof b == "string")
+    a == null || typeof a == "string" ||
+    Array.isArray(a) && a.every((b: any) => b == null || typeof b == "string")
   );
 }

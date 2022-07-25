@@ -6,11 +6,15 @@ YAML 形式で記述したチートシートを [fzf](https://github.com/junegun
 [Deno](https://deno.land/) が必要です。事前に `deno` コマンドが使えるようにしてください。<br>
 このプロダクトの `bin` ディレクトリにパスを通してください。<br>
 
+```shell
+export PATH="$HOME/path/to/deno-crib/bin:$PATH"
+```
+
 チートシートを置くディレクトリを `CRIB_HOME` 環境変数で指定してください。<br>
 このディレクトリ以下の `crib.yml` というファイルがチートシートファイルと見なされます。<br>
 `CRIB_HOME` 環境変数を設定していない場合、非Windows 環境だと `"$XDG_CONFIG_HOME/crib"` が、Windows 環境だと `%AppData%\xdg.config` が使われます。
 
-```
+```shell
 export CRIB_HOME="$HOME/.crib"
 ```
 

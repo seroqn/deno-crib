@@ -48,17 +48,26 @@ export function sheetIntoCribBuds(
   }
   return ret;
 }
-function insertUnderscoreEntry(buds: CribBud[], addee: CribBud, heads: string[]) {
+function insertUnderscoreEntry(
+  buds: CribBud[],
+  addee: CribBud,
+  heads: string[],
+) {
   const sliceEdge = heads.length,
     comp = JSON.stringify(heads);
   let i = buds.length - 1;
   while (i >= 0) {
     const hs = buds[i][0];
-    if (!(hs.length >= sliceEdge && JSON.stringify(hs.slice(0, sliceEdge)) == comp)) {
+    if (
+      !(hs.length >= sliceEdge &&
+        JSON.stringify(hs.slice(0, sliceEdge)) == comp)
+    ) {
       console.error(
         `not moved "_" key entry..`,
-        'base:', heads,
-        `evaluated (i:${i}, sliceEdge:${sliceEdge}):`, hs,
+        "base:",
+        heads,
+        `evaluated (i:${i}, sliceEdge:${sliceEdge}):`,
+        hs,
       );
       break;
     }

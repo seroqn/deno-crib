@@ -10,7 +10,6 @@ deno run --no-check --allow-env --allow-read --allow-write "$CRIB_ROOT/src/cli.t
         --height 64% --preview-window 'down,45%,wrap,border-rounded' \
         --preview "deno run --no-check --allow-read "$CRIB_ROOT/src/previewer.ts" "$(echo "$tmpPath" | sed 's!\\!\\\\\\\\!g')" {1} {2} {3}")
       if [[ -e "$tmpPath" ]]; then
-        :
         rm "$tmpPath"
       fi
       if [[ -n "$sel" ]]; then
@@ -34,8 +33,4 @@ deno run --no-check --allow-env --allow-read --allow-write "$CRIB_ROOT/src/cli.t
   esac
 }
 sts=(${PIPESTATUS[@]})
-if (( ${sts[0]} ))
-then exit ${sts[0]}
-fi
-exit ${sts[1]}
-
+exit ${sts[0]}

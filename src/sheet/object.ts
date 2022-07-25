@@ -40,27 +40,25 @@ export function sheetIntoCribBuds(
     const addee: CribBud = themes.length || isTheme
       ? [[...heads], [...themes, head], v]
       : [[...heads, head], [], v];
-    if (key != "_") {
+    if (key == "_") {
+      insertUnderscoreEntry(ret, addee, heads);
+    } else {
       ret.push(addee);
-      continue;
     }
-    underscore(ret, addee, heads);
   }
   return ret;
 }
-function underscore(buds: CribBud[], addee: CribBud, heads: string[]) {
-  const edge = heads.length,
+function insertUnderscoreEntry(buds: CribBud[], addee: CribBud, heads: string[]) {
+  const sliceEdge = heads.length,
     comp = JSON.stringify(heads);
   let i = buds.length - 1;
   while (i >= 0) {
     const hs = buds[i][0];
-    if (!(hs.length > edge && JSON.stringify(hs.slice(0, edge)) == comp)) {
+    if (!(hs.length >= sliceEdge && JSON.stringify(hs.slice(0, sliceEdge)) == comp)) {
       console.error(
-        'not moved "_" key entry:',
-        i,
-        hs,
-        hs.slice(0, edge),
-        heads,
+        `not moved "_" key entry..`,
+        'base:', heads,
+        `evaluated (i:${i}, sliceEdge:${sliceEdge}):`, hs,
       );
       break;
     }

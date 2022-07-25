@@ -2,7 +2,7 @@
 
 SRCES := ./src ./tests
 ALLOW_FLG := --allow-env --allow-read --allow-write
-TEST_FLG := --unstable --import-map=./t/import_map.json
+TEST_FLG := --unstable --import-map=./tests/import_map.json
 
 
 .PHONY: fmt

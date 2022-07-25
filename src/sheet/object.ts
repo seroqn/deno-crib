@@ -76,7 +76,10 @@ function insertUnderscoreEntry(
   buds.splice(i + 1, 0, addee);
 }
 
-export function filterByTopicQuery(buds: CribBud[], topicQuery: string[]) {
+export function filterByTopicQuery(
+  buds: CribBud[],
+  topicQuery: string[],
+): CribBud[] {
   if (!topicQuery.length) {
     return buds;
   }
